@@ -10,11 +10,6 @@ var cronometer;
 var board = new Array(7);
 
 
-	 
-function ResetTime(){
-    clearInterval(cronometer);
-}
-
 function StartTime(){
     secs =60;
     mins =0;
@@ -25,7 +20,7 @@ function StartTime(){
         function(){
             if(secs==60){
                 secs=59;
-                mins++;
+                mins--;
                 if (mins<10) m.innerHTML ="0"+mins;
                 else m.innerHTML = mins;
 
