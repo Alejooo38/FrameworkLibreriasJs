@@ -86,106 +86,114 @@ function candyColumns(index) {
     return candyColumn[index];
 }
 
-function StartTime(){
-    secs =60;
-    mins =0;
-    s = document.getElementById("seconds");
-    m = document.getElementById("minutes");
+//punto 3. Valida si hay dulces que se eliminarán en una columna
+function columnValidation() {
+    for (var j = 0; j < 7; j++) {
+        var counter = 0;
+        var candyPosition = [];
+        var extraCandyPosition = [];
+        var candyColumn = candyColumns(j);
+        var comparisonValue = candyColumn.eq(0);
+        var gap = false;
+        for (var i = 1; i < candyColumn.length; i++) {
+            var srcComparison = comparisonValue.attr('src');
+            var srcCandy = candyColumn.eq(i).attr('src');
 
-    cronometer = setInterval(
-        function(){
-            if(secs==60){
-                secs=59;
-                mins--;
-                if (mins<10) m.innerHTML ="0"+mins;
-                else m.innerHTML = mins;
-
-                if(mins==60) mins=0;
+            if (srcComparison != srcCandy) {
+                if (candyPosition.length >= 3) {
+                    gap = true;
+                } else {
+                    candyPosition = [];
+                }
+                counter = 0;
+            } else {
+                if (counter == 0) {
+                    if (!gap) {
+                        candyPosition.push(i - 1);
+                    } else {
+                        extraCandyPosition.push(i - 1);
+                    }
+                }
+                if (!gap) {
+                    candyPosition.push(i);
+                } else {
+                    extraCandyPosition.push(i);
+                }
+                counter += 1;
             }
-            if (secs<10) s.innerHTML ="0"+secs;
-            else s.innerHTML = secs;
-
-            secs--;
+            comparisonValue = candyColumn.eq(i);
         }
-        ,1000);
-}
-
-function PaintCell(x, y){
-    cell = document.getElementById("c"+CellSelected_x+CellSelected_y);
-    cell.style.background = "none repeat scroll 0% 0% orange";
-    
-}
-
-
-function SelectCell(x, y){
-
-    Movimientos--;
-    cont_moves = document.getElementById("moves").innerHTML = Movimientos;
-    
-    PaintCell(x, y);
-
-    cell = document.getElementById("c"+x+y);
-    cell.style.background = "none repeat scroll 0% 0% green";
-    cell = document.getElementById("c"+x+y).innerHTML = 
-        "<img id='" + x + y + "' src='1.png'></img>"
-    
-    board[x][y]=1;
-    CellSelected_x=x;
-    CellSelected_y=y;
-
-}
-
-function CheckCell(x, y){
-    dif_x = x - CellSelected_x;
-    dif_y = y - CellSelected_y;
-    CheckTrue = false;
-
-    if (dif_x == 1 && dif_y == 2)   CheckTrue = true; // right - top long
-    if (dif_x == 1 && dif_y == -2)  CheckTrue = true; // right - bottom long
-    if (dif_x == 2 && dif_y == 1)   CheckTrue = true; // right long - top
-    if (dif_x == 2 && dif_y == -1)  CheckTrue = true; // rightlong - bottom
-    if (dif_x == -1 && dif_y == 2)  CheckTrue = true; // left - top long
-    if (dif_x == -1 && dif_y == -2) CheckTrue = true; // left - bottom long
-    if (dif_x == -2 && dif_y == 1)  CheckTrue = true; // left long - top
-    if (dif_x == -2 && dif_y == -1) CheckTrue = true; // left long - bottom
-
-
-    if (board[x][y]==1) CheckTrue=false;
-
-    if (CheckTrue) SelectCell(x, y);
-}
-
-function autoplay(){
-    
-    message = document.getElementById("message");
-    message.style.display = "none";
-
-    for (i=0; i<7; i++) board[i]= new Array(7);
-
-    ClearBoard();
-    ResetTime();
-    StartTime();
-    Movimientos=15;
-    
-    
-    x=Math.round(Math.random()*6);
-    y=Math.round(Math.random()*6);
-    
-    CellSelected_x=x;
-    CellSelected_y=y;
-
-    SelectCell(x, y);
-}
-
-function ClearBoard(){
-    for (i=0; i<7; i++){
-        for (j=0; j<7; j++){
-            board[i][j]=0;
-
-            cell = document.getElementById("c"+i+j);
-            cell.style.background = "";  
-            cell = document.getElementById("c"+i+j).innerHTML = "";
+        if (extraCandyPosition.length > 2) {
+            candyPosition = $.merge(candyPosition, extraCandyPosition);
+        }
+        if (candyPosition.length <= 2) {
+            candyPosition = [];
+        }
+        candyCount = candyPosition.length;
+        if (candyCount >= 3) {
+            deleteColumnCandy(candyPosition, candyColumn);
+            setScore(candyCount);
         }
     }
+}
+function deleteColumnCandy(candyPosition, candyColumn) {
+    for (var i = 0; i < candyPosition.length; i++) {
+        candyColumn.eq(candyPosition[i]).addClass('delete');
+    }
+}
 
+// Valida si hay dulces que deben eliminarse en una fila
+function rowValidation() {
+    for (var j = 0; j < 6; j++) {
+        var counter = 0;
+        var candyPosition = [];
+        var extraCandyPosition = [];
+        var candyRow = candyRows(j);
+        var comparisonValue = candyRow[0];
+        var gap = false;
+        for (var i = 1; i < candyRow.length; i++) {
+            var srcComparison = comparisonValue.attr('src');
+            var srcCandy = candyRow[i].attr('src');
+
+            if (srcComparison != srcCandy) {
+                if (candyPosition.length >= 3) {
+                    gap = true;
+                } else {
+                    candyPosition = [];
+                }
+                counter = 0;
+            } else {
+                if (counter == 0) {
+                    if (!gap) {
+                        candyPosition.push(i - 1);
+                    } else {
+                        extraCandyPosition.push(i - 1);
+                    }
+                }
+                if (!gap) {
+                    candyPosition.push(i);
+                } else {
+                    extraCandyPosition.push(i);
+                }
+                counter += 1;
+            }
+            comparisonValue = candyRow[i];
+        }
+        if (extraCandyPosition.length > 2) {
+            candyPosition = $.merge(candyPosition, extraCandyPosition);
+        }
+        if (candyPosition.length <= 2) {
+            candyPosition = [];
+        }
+        candyCount = candyPosition.length;
+        if (candyCount >= 3) {
+            deleteHorizontal(candyPosition, candyRow);
+            setScore(candyCount);
+        }
+    }
+}
+function deleteHorizontal(candyPosition, candyRow) {
+    for (var i = 0; i < candyPosition.length; i++) {
+        candyRow[candyPosition[i]].addClass('delete');
+    }
 }
