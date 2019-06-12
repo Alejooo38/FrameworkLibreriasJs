@@ -78,3 +78,38 @@ function CheckCell(x, y){
 
     if (CheckTrue) SelectCell(x, y);
 }
+
+function autoplay(){
+    
+    message = document.getElementById("message");
+    message.style.display = "none";
+
+    for (i=0; i<7; i++) board[i]= new Array(7);
+
+    ClearBoard();
+    ResetTime();
+    StartTime();
+    Movimientos=15;
+    
+    
+    x=Math.round(Math.random()*6);
+    y=Math.round(Math.random()*6);
+    
+    CellSelected_x=x;
+    CellSelected_y=y;
+
+    SelectCell(x, y);
+}
+
+function ClearBoard(){
+    for (i=0; i<7; i++){
+        for (j=0; j<7; j++){
+            board[i][j]=0;
+
+            cell = document.getElementById("c"+i+j);
+            cell.style.background = "";  
+            cell = document.getElementById("c"+i+j).innerHTML = "";
+        }
+    }
+
+}
