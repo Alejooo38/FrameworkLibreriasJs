@@ -145,4 +145,57 @@ Timer.prototype.start = function (options) {
 		}.bind(this)), refreshRate);
 		element.intervalId = intervalId;
 	};
+
+	Timer.prototype.clearTimer = function (element) {
+		element.find('.jst-seconds').text('00');
+		element.find('.jst-minutes').text('00:');
+	};
+
+	Timer.prototype.currentTime = function () {
+		return Math.round((new Date()).getTime() / 1000);
+	};
+
+	Timer.prototype.formatTimeLeft = function (timeLeft) {
+
+		var lpad = function (n, width) {
+			width = width || 2;
+			n = n + '';
+
+			var padded = null;
+
+			if (n.length >= width) {
+				padded = n;
+			} else {
+				padded = Array(width - n.length + 1).join(0) + n;
+			}
+			return padded;
+		};
+		var minutes = Math.floor(timeLeft / 60);
+		timeLeft -= minutes * 60;
+		var seconds = parseInt(timeLeft % 60, 10);
+		if (+minutes === 0 && +seconds === 0) {
+			return [];
+		} else {
+			return [lpad(minutes), lpad(seconds)];
+		}
+	};
+
+	Timer.prototype.setFinalValue = function (finalValues, element) {
+
+		if (finalValues.length === 0) {
+			this.clearTimer(element);
+			element.trigger('complete');
+			return false;
+		}
+		element.find('.' + this._options.classNameSeconds).text(finalValues.pop());
+		element.find('.' + this._options.classNameMinutes).text(finalValues.pop() + ':');
+	};
+
+	$.fn.startTimer = function (options) {
+		this.TimerObject = Timer;
+		Timer.start(options, this);
+		return this;
+	};
+}));
+
 	
